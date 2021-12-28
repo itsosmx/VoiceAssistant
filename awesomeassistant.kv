@@ -21,7 +21,7 @@
       # background_color: 0.431, 0.58, 0.902
       background_color: 0, 0, 0, 0
       pos_hint: {'center_x': 0.5}
-      on_press: root.callback()
+      on_press: root.second_thread()
       # on_release: root.release()
       # Button: 
       #   background_color: 0, 0, 0, 0
@@ -41,10 +41,4 @@
     text: "Say 'Hello' to start chatting with me."
     center_x: self.parent.center_x
     center_y: self.parent.center_y * .2
-  Label:
-    id: text_id
-    center_x: self.parent.center_x
-    center_y: self.parent.center_y * .3
-
-
         

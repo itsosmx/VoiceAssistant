@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import speech_recognition as speechRec
 import pyttsx3
 import datetime
@@ -5,20 +6,21 @@ import subprocess
 import pygame.mixer
 import asyncio
 import webbrowser
+import time
+import threading
 import os
 import wikipedia
-import moviepy.editor as mp
-
-from pytube import YouTube
-from youtube_search import YoutubeSearch
+# import moviepy.editor as mp
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.clock import Clock
+from kivy.clock import Clock, mainthread
 from os import walk
-os.environ["IMAGEIO_FFMPEG_EXE"] = "/usr/bin/ffmpeg"
+from youtube import YoutubeSearching
+# os.environ["IMAGEIO_FFMPEG_EXE"] = "/usr/bin/ffmpeg"
 
 
 recognizer = speechRec.Recognizer();
+
 pygame.mixer.init()
 AI = pyttsx3.init()
 
@@ -36,38 +38,6 @@ def respone(message):
   AI.say(message)
   AI.runAndWait()
 
-# Download Music from youtube and convert it to mp3
-async def YoutubeSearching(query):
-  try:
-    result = YoutubeSearch(query, max_results=1).to_dict()
-    videoId = result[0]['id']
-    url = f'https://youtu.be/{videoId}'
-    video = YouTube(url)
-    directory  = 'player'
-    filePath = f'{directory}/{videoId}.mp3'
-    
-    files = []
-    for (dirpath, dirnames, filenames) in walk(directory):
-      files.extend(filenames)
-      break
-    if f'{videoId}.mp3' in files:
-      return filePath
-    
-    audio = video.streams.filter(only_audio=True).first()
-    source = audio.download(directory)
-    clip = mp.AudioFileClip(source).subclip(10,)
-    clip.write_audiofile(filePath)
-    
-    
-    # Delete all mp4 files
-    if len(os.listdir(directory )) != 0:
-      for file in os.listdir(directory):
-        if file.endswith('.mp4'):
-          os.remove(os.path.join(directory , file))
-          
-    return filePath
-  except: pass
-
 # Open the mic and start recognize the user voice
 def RecognizeVoice():
   try:
@@ -75,21 +45,19 @@ def RecognizeVoice():
       voice = recognizer.listen(sound)
       voiceText = recognizer.recognize_google(voice)
       voiceText = voiceText.lower()
-      print(f'Me : {voiceText}')
+      print(f'Input : {voiceText}')
       return voiceText
   except speechRec.UnknownValueError:
-    # respone('Sorry, I didn\'t recognize your voice.')
+    respone('Sorry, I didn\'t recognize your voice.')
     # respone('listening.....')
-    pass
   except speechRec.RequestError:
     respone('Sorry, something went wrong.')
-userName = None
+
+userName = NULL
+
 # Matching user input with keys and return action
-def Talking(widget):
+def Talking(self):
   try:
-    # if not Starting():
-    #   return
-    # else:
     global userName 
     if not userName:
       respone('Hello, first Can you tell me your name?')
@@ -105,51 +73,64 @@ def Talking(widget):
       if key in voiceText:
         return True;
       else: return False
-    widget.ids.text_id.text = voiceText
-    # print(self.ids)
+    
+    self.ids.text_id.test = voiceText
     if matching('date'):
       Date = Date.strftime("%x")
       return respone(f'Date is {Date}')
+    
     elif matching('my name'):
       respone('If you know this key, you are definitely the boss, Hello Osama.')
+    
     elif matching('time'):
       Date = Date.strftime("%I:%M %p")
       return respone(f'the time is {Date}')
+    
     elif matching('your name'):
       return respone('I\'m the boss hahahahahahahahhhahahahahahah')
+    
     elif matching('rename'):
       userName = voiceText.split(' ').pop()
-      return respone('I\'m the boss hahahahahahahahhhahahahahahah')
+      return respone(f'Change username to {userName}')
+    
     elif matching('created'):
       return respone('I don\'t know, someome called Osama. do you know him?!')
+    
     elif matching('google'):
       respone('opening google chrome')
       return subprocess.Popen(['C:\Program Files\Google\Chrome\Application\\chrome.exe', '-new-tab'])
+    
     elif matching('play'):
       try:
         voiceText = voiceText.replace('play', '')
+        respone(f'Playing your music')
         source = asyncio.run(YoutubeSearching(voiceText))
-        respone(f'Playing, your music')
-        pygame.mixer.stop()
+        pygame.mixer.music.stop()
         pygame.mixer.music.load(source)
         return pygame.mixer.music.play()
         # os.startfile(source) #Playing in the windows player
       except: respone('Please check your internet connection.')
+      
     elif matching('stop'):
       respone('Stopping your music')
       return pygame.mixer.music.stop()
+    
     elif matching('project'):
       return respone('It\'s a simple GUI app for Computer language 2, I\'m AI that can do what ever you want, but iam waiting my lazy Boss to develop me more than this.')
+    
     elif matching('search'):
       voiceText = voiceText.replace('search', '')
       return webbrowser.open_new_tab(f'https://www.google.com/search?q={voiceText}')
+    
     elif matching('say'):
       voiceText = voiceText.replace('say', '')
       return respone(voiceText)
+    
     elif matching('destroy'):
       respone('I will take a nap. bye')
       App.get_running_app().stop()
       return True
+  
     elif matching('wiki'):
       try:
         name = voiceText.replace('wiki', '')
@@ -157,37 +138,55 @@ def Talking(widget):
         if data: return respone(data)
         else: return respone('Sorry, No data found.')
       except: respone('Please check your internet connection.')
+    
     else: return respone('Sorry, i can\'t understand you.') # Run if the above function not match
+  
   except:
     # Run if something gose wrong or the voice not detected
     respone('Sorry, i can\'t understand you.')
-    return Talking(widget)
+    return Talking(self)
 
 def Starting(self):
-  try:
-    print("listening.....")
-    voiceText = RecognizeVoice()
-
-    if 'hello' not in voiceText:
-      Starting(self)
-      return False
-    else: 
-      x = Talking(self)
-      while not x:
-        Starting(self)
-      return 
-  except: pass
-  
-
-class PyWidget(Widget):
-  def release(self):
-    self.ids.mic.source = 'assets/normal2.png'
-  def callback(self):
-    self.ids.mic.source = 'assets/open2.png'
-    self.ids.mic.reload()
-    Clock.schedule_once(lambda dt: Starting(self))
+  while True:
+    try:
+      print('listening.......')
+      voiceText = RecognizeVoice()
+      if 'hello' in voiceText and Talking(self):
+        return
+    except:
+      print('something wrong in the Strating Func.')
     
+class PyWidget(Widget):
+  stop = threading.Event()
+  
+  def start_second_thread(self):
+    threading.Thread(target=self.second_thread,  args=[self]).start()
+
+  def second_thread(self):
+    threading.Thread(target=Starting, args=[self]).start()
+    self.ids.mic.source = 'assets/open2.png'
+    time.sleep(2)
+    self.ids.mic.reload()
+    time.sleep(2)
+    
+    
+  # def second_thread(self, lable_text):
+  #   self.ids.mic.source = 'assets/open2.png'
+  #   Clock.schedule_once(self.Starting(self), 0)
+  #   time.sleep(5)
+  #   l_text = str(int(lable_text) * 3000)
+    
+  # def release(self):
+  #   self.ids.mic.source = 'assets/normal2.png'
+  # def callback(self):
+  #   self.ids.mic.source = 'assets/open2.png'
+  #   self.ids.mic.reload()
+  #   Clock.schedule_once(lambda dt: Starting(self))
+
+
 class AwesomeAssistant(App):
+  def on_stop(self):
+    self.root.stop.set()
   def build(self):
     return PyWidget()
     # setup window 
