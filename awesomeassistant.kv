@@ -1,0 +1,50 @@
+<PyWidget>
+  canvas.before:
+    Color:
+      rgba:(119/255, 179/255, 212/255, 1)
+      # rgba: (1, 1, 1, 1)
+    Rectangle:
+      pos: self.pos
+      size: self.size
+  BoxLayout:
+    orientation: 'vertical'
+    size: root.width, root.height
+    padding: 200
+    spacing: 50
+    # Label:
+    #   id: title
+    #   text: "Awesome Assistant"
+      # font_size: 50
+    ToggleButton:
+      id: button
+      size_hint: .15, .5
+      # background_color: 0.431, 0.58, 0.902
+      background_color: 0, 0, 0, 0
+      pos_hint: {'center_x': 0.5}
+      on_press: root.callback()
+      # on_release: root.release()
+      # Button: 
+      #   background_color: 0, 0, 0, 0
+      #   on_press: root.changeImage()
+      #   center_x: self.parent.center_x
+      #   center_y: self.parent.center_y
+      #   size_hint: .15, .5
+      Image:
+        id: mic
+        allow_stretch: True
+        size: 250, 250
+        source: 'assets/normal2.png'
+        center_x: self.parent.center_x
+        center_y: self.parent.center_y
+  Label:
+    id: text_id
+    text: "Say 'Hello' to start chatting with me."
+    center_x: self.parent.center_x
+    center_y: self.parent.center_y * .2
+  Label:
+    id: text_id
+    center_x: self.parent.center_x
+    center_y: self.parent.center_y * .3
+
+
+        
