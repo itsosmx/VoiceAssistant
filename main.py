@@ -42,14 +42,16 @@ def respone(message):
 def RecognizeVoice():
   try:
     with speechRec.Microphone() as sound:
-      voice = recognizer.listen(sound)
-      voiceText = recognizer.recognize_google(voice)
+      voice = recognizer.listen(sound, phrase_time_limit=5)
+      voiceText = recognizer.recognize_google(voice) #online 
+      # voiceText = recognizer.recognize_sphinx(voice, language="en-US") #offline
+      # voiceText = recognizer.recognize_houndify() #offline
       voiceText = voiceText.lower()
       print(f'Input : {voiceText}')
       return voiceText
   except speechRec.UnknownValueError:
-    # respone('Sorry, I didn\'t recognize your voice.')
-    pass
+    respone('Sorry, I didn\'t recognize your voice.')
+    # pass
     # respone('listening.....')
   except speechRec.RequestError:
     respone('Sorry, something went wrong.')
@@ -64,6 +66,7 @@ def Talking(self):
       respone('Hello, first Can you tell me your name?')
       voiceText = RecognizeVoice()
       userName = voiceText
+    else: return Talking(self)
       
     respone(f"Hello, {userName} How can i help you")
     voiceText = RecognizeVoice()
@@ -81,7 +84,7 @@ def Talking(self):
       return respone(f'Date is {Date}')
     
     elif matching('my name'):
-      respone('If you know this key, you are definitely the boss, Hello Osama.')
+      respone(f'If you know this key, you are definitely the boss, Hello {userName}.')
     
     elif matching('time'):
       Date = Date.strftime("%I:%M %p")
