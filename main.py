@@ -48,7 +48,8 @@ def RecognizeVoice():
       print(f'Input : {voiceText}')
       return voiceText
   except speechRec.UnknownValueError:
-    respone('Sorry, I didn\'t recognize your voice.')
+    # respone('Sorry, I didn\'t recognize your voice.')
+    pass
     # respone('listening.....')
   except speechRec.RequestError:
     respone('Sorry, something went wrong.')
@@ -126,6 +127,13 @@ def Talking(self):
       voiceText = voiceText.replace('say', '')
       return respone(voiceText)
     
+    # elif matching('+'):
+    #   result = 0
+    #   for num in voiceText.split(' '):
+    #     if num.isdigit():
+    #       result += num
+    #   respone(f'The result is {result}')
+      
     elif matching('destroy'):
       respone('I will take a nap. bye')
       App.get_running_app().stop()
