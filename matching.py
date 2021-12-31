@@ -51,12 +51,12 @@ def Talking(App, respone, RecognizeVoice):
   elif matching('your name'):
     respone('I\'m the boss hahahahahahahahhhahahahahahah')
   
-  elif matching('change my name'):
+  elif matching('change name'):
     userName = voiceText.split(' ').pop()
     respone(f'Change username to {userName}')
   
   elif matching('created'):
-    respone('I don\'t know, someome called Osama. do you know him?!')
+    respone('you don\'t know, i don\'t know either, i heard someone called him Osama, what a name')
   
   elif matching('google'):
     respone('opening google chrome')
@@ -81,9 +81,14 @@ def Talking(App, respone, RecognizeVoice):
     pygame.mixer.music.stop()
   
   elif matching('project'):
-    respone('It\'s a simple GUI app for Computer language 2, I\'m AI that can do what ever you want, but iam waiting my lazy Boss to develop me more than this.')
-  
+    respone('It\'s a simple GUI app for Computer language 2 developed by Osama Hussein, Under the supervision of Dr. Ali , I\'m a voice assistant, or you can called me intelligent personal assistant, all my functionality  based on natural language speech recognition.')
+    respone('For more information about me, take a look here')
+    webbrowser.open_new_tab('https://en.wikipedia.org/wiki/Virtual_assistant')
+
   elif matching('search'):
+    voiceText = voiceText.replace('search about', '')
+    voiceText = voiceText.replace('search for', '')
+    voiceText = voiceText.replace('search to', '')
     voiceText = voiceText.replace('search', '')
     webbrowser.open_new_tab(f'https://www.google.com/search?q={voiceText}')
   

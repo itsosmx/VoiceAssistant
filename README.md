@@ -19,9 +19,9 @@
 ## KeyWords
   - date
   - my name
+  - day
   - time
   - your name
-  - rename
   - created
   - google
   - play
@@ -31,3 +31,4 @@
   - say
   - destroy
   - wiki
+  - change name

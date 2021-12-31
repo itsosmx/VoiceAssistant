@@ -68,6 +68,7 @@ class PyWidget(Widget):
   def start_listening(self):
     while True:
       try:
+        time.sleep(1)
         print('Listening.......')
         voiceText = RecognizeVoice()
         time.sleep(1)
