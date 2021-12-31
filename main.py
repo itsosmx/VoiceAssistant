@@ -5,7 +5,7 @@ import pyttsx3
 import threading
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.clock import mainthread
+from kivy.clock import Clock, mainthread
 from matching import Talking
 recognizer = speechRec.Recognizer();
 AI = pyttsx3.init()
@@ -71,9 +71,11 @@ class PyWidget(Widget):
         time.sleep(1)
         print('Listening.......')
         voiceText = RecognizeVoice()
-        time.sleep(1)
+        # time.sleep(1)
         if 'hello' in voiceText and Talking(App, respone, RecognizeVoice):
           return
+        
+        # else: Talking(App, respone, RecognizeVoice)
         time.sleep(1)
       except Exception as e:
         print(f'start_listening: {e}')
